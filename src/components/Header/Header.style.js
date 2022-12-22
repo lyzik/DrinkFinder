@@ -7,5 +7,6 @@ export const Header = styled.div`
         text-decoration: none;
         color:white;
         font-size: 27px;
+        font-weight: 900;
     }
 `;

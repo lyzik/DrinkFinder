@@ -11,7 +11,6 @@ const DrinkDetails = () => {
     if(drinkData) {
         while(drinkData[`strIngredient` + currIng]){
             ingredient.push(drinkData[`strIngredient` + currIng])
-            console.log(ingredient)
             currIng++
         }
     }
@@ -22,19 +21,34 @@ const DrinkDetails = () => {
         .then(data => setDrinkData(data.drinks[0]))
     }, [])
 
-    //<h1>{drinkData ? drinkData.drinks[0].strDrink : null}</h1>
-
     return drinkData ? (
         <Styled.Main>
-            <Styled.ImgContainer>
-                <img src={drinkData.strDrinkThumb} />
-            </Styled.ImgContainer>
-            <Styled.Info>
-                <h1>{drinkData.strDrink}</h1>
-                {ingredient.map(ingredient => (
-                    <h3>{ingredient}</h3>
-                ))}
-            </Styled.Info>
+            <div className="LeftSide">
+                <Styled.Info>
+                    <Styled.ImgContainer>
+                        <img src={drinkData.strDrinkThumb} />
+                    </Styled.ImgContainer>
+                    <Styled.Ingredients>
+                        <h1>{drinkData.strDrink}</h1>
+                        {ingredient.map((ingredient, index) => (
+                            <h3 key={index}>
+                                {ingredient}  
+                                {drinkData[`strMeasure` + (index + 1)] ? ` - ${drinkData[`strMeasure` + (index + 1)]}` : ""}
+                            </h3>
+                        ))}
+                    </Styled.Ingredients>
+                </Styled.Info>
+                <Styled.Recipe>
+                    <h3>{drinkData.strInstructions}</h3>
+                </Styled.Recipe>
+            </div>
+            <Styled.RightSide>
+                <Styled.moreInfo>
+                    <h3>- {drinkData.strCategory}</h3>
+                    <h3>- {drinkData.strAlcoholic}</h3>
+                    <h3>- {drinkData.strGlass}</h3>
+                </Styled.moreInfo>
+            </Styled.RightSide>
         </Styled.Main>
     ) : null
 
