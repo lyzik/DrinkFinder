@@ -4,7 +4,11 @@ import * as Styled from "./Header.style"
 
 const Header = () => {
     return <Styled.Header>
-        <a href={`/`}>DrinkFinder</a>
+        <Styled.MainLink href={`/`}>DrinkFinder</Styled.MainLink>
+        <Styled.Nav>
+            <a href="/search">Search</a>
+            <a href="/">List</a>
+        </Styled.Nav>
     </Styled.Header>
 }
 
