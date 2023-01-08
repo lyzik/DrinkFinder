@@ -1,24 +1,31 @@
 import React from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux"
+import { toggleFavoriteDrink } from "../../redux/favoritesSlice";
 import * as Styled from "./DrinkListElement.style"
-
-
-function setFavoriteDrink(drinkId){
-    if(!localStorage.getItem(drinkId)){
-        localStorage.setItem(drinkId, true);
-    }else{
-        localStorage.removeItem(drinkId)
-    }
-}
+import { useSelector } from "react-redux";
 
 const DrinkListElement = ( {drink} ) => {
-    const [favourite, setFavorite] = useState([localStorage.getItem(drink.drinkId)])
+    // const [favourite, setFavorite] = useState([localStorage.getItem(drink.drinkId)])
 
-    setFavoriteDrink(drink.drinkId, setFavorite)
+    const favorites = useSelector(state => state.favorites.favoritesId)
+    const isFavorite = favorites[drink.idDrink] || false
+    const dispatch = useDispatch()
+
+    // const setFavoriteDrink = drinkId => {
+    //     if(!localStorage.getItem(drinkId)){
+    //         localStorage.setItem(drinkId, true);
+    //     }else{
+    //         localStorage.removeItem(drinkId)
+    //     }
+    // }
+
+    const setFavoriteDrink = drinkId => {
+        dispatch(toggleFavoriteDrink(drinkId))
+    }
 
     return (
-    <Styled.Drink key={drink.idDrink} color={localStorage.getItem(drink.idDrink) ? "red" : "lightgray"}>
+    <Styled.Drink key={drink.idDrink} color={isFavorite ? "red" : "lightgray"}>
         <Styled.Link href={`/drinks/${drink.idDrink}`}>
             <Styled.Image>
                 <img src={drink.strDrinkThumb} alt="" />
@@ -30,7 +37,7 @@ const DrinkListElement = ( {drink} ) => {
             </Styled.Text>
         </Styled.Link>
         <div>
-            <span className="material-symbols-sharp" onClick={() => {setFavoriteDrink(drink.idDrink); setFavorite(!favourite)}}>
+            <span className="material-symbols-sharp" onClick={() => {setFavoriteDrink(drink.idDrink)}}>
                 favorite
             </span>
         </div>

@@ -5,15 +5,8 @@ import * as Styled from "./DrinkDetails.style"
 const DrinkDetails = () => {
     let {id} = useParams()
     const [drinkData, setDrinkData] = useState()
-    const ingredient = []
-    let currIng = 1;
+    const [ingredients, setIngredients] = useState([])
 
-    if(drinkData) {
-        while(drinkData[`strIngredient` + currIng]){
-            ingredient.push(drinkData[`strIngredient` + currIng])
-            currIng++
-        }
-    }
 
     useEffect(() =>{
         fetch(`https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${id}`)
@@ -21,7 +14,18 @@ const DrinkDetails = () => {
         .then(data => setDrinkData(data.drinks[0]))
     }, [])
 
-    return drinkData ? (
+    useEffect(()=> {
+        if(drinkData){
+            let tempArr = []
+            for(let i = 1; drinkData[`strIngredient` + i]; i++){
+                tempArr.push(drinkData[`strIngredient` + i])
+            }
+            setIngredients(tempArr)
+        }
+    }, [drinkData])
+    
+
+    return drinkData && ingredients ? (
         <Styled.Main>
             <div className="LeftSide">
                 <Styled.Info>
@@ -30,7 +34,7 @@ const DrinkDetails = () => {
                     </Styled.ImgContainer>
                     <Styled.Ingredients>
                         <h1>{drinkData.strDrink}</h1>
-                        {ingredient.map((ingredient, index) => (
+                        {ingredients.map((ingredient, index) => (
                             <h3 key={index}>
                                 {ingredient}  
                                 {drinkData[`strMeasure` + (index + 1)] ? ` - ${drinkData[`strMeasure` + (index + 1)]}` : ""}
@@ -51,7 +55,7 @@ const DrinkDetails = () => {
             </Styled.RightSide>
         </Styled.Main>
     ) : null
-
+    
 }
 
 export default DrinkDetails

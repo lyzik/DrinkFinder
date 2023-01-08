@@ -9,7 +9,7 @@ import { Link } from "react-router-dom"
 const DrinksList = () => {
     const dispatch = useDispatch();
     const canFetch = useRef(false)
-    const drinks = useSelector(state => state.data).drinks
+    const {drinks} = useSelector(state => state.data)
     const [glassesType, setGlassesType] = useState([])
     const [currentType, setCurrentType] = useState(0)
 
@@ -33,9 +33,9 @@ const DrinksList = () => {
 
     return (<Styled.DataContainer>
         {drinks.map(drink => (
-            <DrinkListElement drink={drink} key={drink.idDrink}/>
+            <DrinkListElement drink={drink} key={drink.idDrink} isFavorite={null}/>
         ))}
-        <button onClick={() => handleClick()}>Get more!</button>
+        <button onClick={handleClick}>Get more!</button>
     </Styled.DataContainer>)
 }
 
