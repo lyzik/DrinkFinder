@@ -8,27 +8,22 @@ import { Link } from "react-router-dom"
 
 const DrinksList = () => {
     const dispatch = useDispatch();
-    const canFetch = useRef(false)
     const {drinks} = useSelector(state => state.data)
-    const [glassesType, setGlassesType] = useState([])
-    const [currentType, setCurrentType] = useState(0)
+    const [letterCharCode, setLetterCharCode] = useState(49)
 
-
-    useEffect(()=>{
-        fetch(`https://www.thecocktaildb.com/api/json/v1/1/list.php?g=list`)
-        .then(res => res.json())
-        .then(data => setGlassesType(data))
-        .then(() => canFetch.current = true)
-    }, [])
-
-    useEffect(() => {
-        if(canFetch.current){
-            dispatch(fetchData(glassesType.drinks[currentType].strGlass))
+    const handleScroll = event => {
+        if(window.innerHeight + window.scrollY >= document.body.offsetHeight){
+            setLetterCharCode(letterCharCode + 1)
         }
-    }, [canFetch.current, currentType])
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    useEffect(() => {
+        dispatch(fetchData(String.fromCharCode(letterCharCode)))
+    }, [letterCharCode])
 
     function handleClick(){
-        setCurrentType(currentType + 1)
+        setLetterCharCode(letterCharCode + 1)
     }
 
     return (<Styled.DataContainer>

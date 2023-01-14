@@ -6,6 +6,7 @@ const Header = () => {
     return <Styled.Header>
         <Styled.MainLink href={`/`}>DrinkFinder</Styled.MainLink>
         <Styled.Nav>
+            <a href="/searchbying">Find by ingredients</a>
             <a href="/search">Search</a>
             <a href="/">List</a>
         </Styled.Nav>

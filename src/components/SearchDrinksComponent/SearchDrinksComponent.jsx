@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import DrinkListElement from "../DrinkListElement/DrinkListElement";
 import * as Styled from './SearchDrinksComponent.style'
 
 const SearchDrinksComponent = () => {
     const [placeholder, setPlaceholder] = useState("")
-    const [input, setInput] = useState("a")
-    const [drinks, setDrinks] = useState({})
+    const [input, setInput] = useState("")
+    const [drinks, setDrinks] = useState()
 
     useEffect(() =>{
         fetch(`https://www.thecocktaildb.com/api/json/v1/1/random.php`)
@@ -15,17 +16,24 @@ const SearchDrinksComponent = () => {
     useEffect(() => {
         fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${input}`)
         .then(res => res.json())
-        .then(data => setDrinks(data))
-        .then(console.log(drinks))
+        .then(data => setDrinks(data.drinks))
+        .catch(() => setDrinks({}))
     }, [input])
 
-    function inputHandler(input){
-        setInput('b')
+    const handleChange = event => {
+        setInput(event.target.value)
     }
+
     return (
-        <Styled.SearchBarContainer>
-            <input type="text" placeholder={`${placeholder}...`}/>
-        </Styled.SearchBarContainer>
+        <>
+            <Styled.SearchBarContainer>
+                <input type="text" placeholder={`${placeholder}...`} onChange={handleChange}/>
+            </Styled.SearchBarContainer>
+
+            {drinks ? drinks.map(drink => (
+                <DrinkListElement drink={drink} key={drink.idDrink} isFavorite={null}/>
+            )) : null}
+        </>
     )
 }
 

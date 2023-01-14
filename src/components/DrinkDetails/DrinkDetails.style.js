@@ -24,6 +24,7 @@ export const Main = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr;
     height: 90%;
+    padding-top: 50px;
 `
 
 export const RightSide = styled.div`

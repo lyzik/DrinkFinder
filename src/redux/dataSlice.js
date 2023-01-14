@@ -3,9 +3,9 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 
 export const fetchData = createAsyncThunk(
     'dataSlice/fetchData',
-    async (currentGlass) => {
+    async (letter) => {
         return await
-        fetch(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?g=${currentGlass}`)
+        fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?f=${letter}`)
         .then(res => res.json())
     }
 )
@@ -13,6 +13,7 @@ export const fetchData = createAsyncThunk(
 const initialState = {
     status: null,
     drinks: [],
+    fetchedDrinks: [],
 }
 
 const dataSlice = createSlice({
@@ -29,6 +30,7 @@ const dataSlice = createSlice({
             .addCase(fetchData.fulfilled, (state, action) => {
                 state.status = "success"
                 state.drinks = [...state.drinks, ...action.payload.drinks]
+                state.fetchedDrinks = action.payload.drinks
             })
             .addCase(fetchData.rejected, (state) => {
                 state.status = "rejected"

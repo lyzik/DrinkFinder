@@ -5,6 +5,8 @@ export const Header = styled.div`
     padding: 10px 50px 10px 50px;
     display: grid;
     grid-template-columns: auto 1fr;
+    position: fixed;
+    width: 100%;
 `;
 
 export const MainLink = styled.a`
