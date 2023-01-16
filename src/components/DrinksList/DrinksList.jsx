@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchData } from "../../redux/dataSlice";
 import DrinkListElement from "../DrinkListElement/DrinkListElement";
 import * as Styled from "./DrinksList.style"
-import { Link } from "react-router-dom"
 
 const DrinksList = () => {
     const dispatch = useDispatch();

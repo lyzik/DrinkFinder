@@ -5,9 +5,10 @@ export const SearchBarContainer = styled.div`
     input{
         padding: 10px;
         border-radius: 15px;
-        border: none;
-        box-shadow: 0px 3px 30px rgba(0,0,0,0.25);
-        width: 350px
+        border: 2px solid gray;
+        width: 50%;
+        background-color: rgba(0, 0, 0, 0.4);
+        color: white;
     }
     input:focus{
         outline: none;

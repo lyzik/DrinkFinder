@@ -17,8 +17,8 @@ export const Ingredients = styled.div`
     span{
         padding: 5px 5px 5px 20px;
     }
-    background-color: #F353DA;
-    color: white;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: pink;
     position: fixed;
     padding: 20px;
     margin: 0px 20px 20px 20px;
@@ -28,9 +28,10 @@ export const Ingredients = styled.div`
     input{
         padding: 10px;
         border-radius: 15px;
-        border: none;
-        box-shadow: 0px 3px 30px rgba(0,0,0,0.25);
-        width: 100%
+        border: 2px solid gray;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
     }
     input:focus{
         outline: none;
@@ -40,6 +41,7 @@ export const Ingredients = styled.div`
 export const Ingredient = styled.div`
     p{
         font-size: 30px;
+        color: gray;
     }
     p:hover{
         cursor: pointer;
@@ -49,6 +51,7 @@ export const Ingredient = styled.div`
         padding: 5px 5px 5px 20px;
     }
 `
+
 
 export const Drinks = styled.div`
     width: 65%;

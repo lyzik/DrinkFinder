@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import * as Styled from "./DrinkDetails.style"
+import { ColorExtractor } from 'react-color-extractor'
 
 const DrinkDetails = () => {
     let {id} = useParams()
     const [drinkData, setDrinkData] = useState()
     const [ingredients, setIngredients] = useState([])
+    const [bgColor, setBgColor] = useState("")
 
 
     useEffect(() =>{
@@ -26,9 +28,10 @@ const DrinkDetails = () => {
     
 
     return drinkData && ingredients ? (
-        <Styled.Main>
+        <Styled.Main bgColor={bgColor}>
             <div className="LeftSide">
                 <Styled.Info>
+                <ColorExtractor src={drinkData.strDrinkThumb} getColors={colors => setBgColor(colors[5])} />
                     <Styled.ImgContainer>
                         <img src={drinkData.strDrinkThumb} />
                     </Styled.ImgContainer>

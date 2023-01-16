@@ -6,16 +6,15 @@ import * as Styled from './SearchByIngredients.style'
 
 const SearchByIngredients = () => {
     const [ingredientName, setIngredientName] = useState() // This state is using in fetching data (string)
-    const [ingredientsList, setIngredientsList] = useState([])
-    const [ingredients, setIngredients] = useState([]) // Array of ingredients
-    const [drinks, setDrinks] = useState(0);
-    const [isRemoving, setIsRemoving] = useState(false); //flag to prevent data from being repeated
+    const [ingredientsList, setIngredientsList] = useState([]) //List of ingredients 
+    const [selectedIngredients, setSelectedIngredients] = useState([]) // Array of ingredients
+    const [drinks, setDrinks] = useState(0); // List of drinks based on ingredients
     const [input, setInput] = useState("");
 
     //Getting session ingredients and drinks if exists
     useEffect(() => {
         sessionStorage.getItem(`ingredients`) ? 
-        setIngredients(JSON.parse(sessionStorage.getItem(`ingredients`))) : null
+        setSelectedIngredients(JSON.parse(sessionStorage.getItem(`ingredients`))) : null
 
         sessionStorage.getItem(`drinks`) ? 
         setDrinks(JSON.parse(sessionStorage.getItem(`drinks`))) : null
@@ -27,7 +26,7 @@ const SearchByIngredients = () => {
         .then(res => res.json())
         .then(data => {
             !drinks ? setDrinks(data.drinks)
-            : (setDrinks(findDuplicates(data.drinks, drinks, "idDrink"))) 
+            : (setDrinks(mergingArrays(data.drinks, drinks, "idDrink"))) 
         })
         .then(() => {
             setIngredientName("")
@@ -38,19 +37,20 @@ const SearchByIngredients = () => {
     useEffect(() => {
         fetch("https://www.thecocktaildb.com/api/json/v2/1/list.php?i=list")
         .then(res => res.json())
-        .then(data => setIngredientsList(data.drinks))
         // .then(data => setIngredientsList([...new Set(ingredients.concat(data.drinks).map(el => el))]))
-    }, [])
+        .then(data => {
+            sessionStorage.getItem(`allIngredients`) ? 
+            setIngredientsList(JSON.parse(sessionStorage.getItem(`allIngredients`))) : setIngredientsList(data.drinks)
+        })
+        }, [])
 
     const handleChange = React.useCallback((event) => {
         setInput(event.target.value)
-        setIsRemoving(false)
     }, [])
 
-    const removeIngredient = (ingToRemove) => {
-        setIsRemoving(true)
+    const removeIngredient = ingToRemove => {
         setDrinks(0)
-        setIngredients(ingredients.filter(element => {
+        setSelectedIngredients(selectedIngredients.filter(element => {
             if(element !== ingToRemove){
                 setIngredientName(element)
                 return element
@@ -58,28 +58,29 @@ const SearchByIngredients = () => {
         })
         );
     }
-    const findDuplicates = (arr1, arr2, key) => {
+    
+    const mergingArrays = (arr1, arr2, key) => {
         return arr1.filter(item1 => arr2.some(item2 => item1[key] === item2[key]));
     }
 
-    const removeElement = ingToRemove => {
-        setIngredientsList(ingredientsList.filter(element => {
-            return element.strIngredient1 !== ingToRemove
-        }))
-    }        
-
     window.addEventListener('beforeunload', (event) => {
-        sessionStorage.setItem('ingredients', JSON.stringify(ingredients));
+        sessionStorage.setItem('ingredients', JSON.stringify(selectedIngredients));
         sessionStorage.setItem('drinks', JSON.stringify(drinks));
-    });
+        sessionStorage.setItem('allIngredients', JSON.stringify(ingredientsList));
+    }); //Find new solution
 
     return (
         <Styled.Main>
             <div>
                 <Styled.Ingredients>
+                    <button onClick={
+                        () => {                }
+                    }>
+                        napraw
+                    </button>
                     <input type="text" placeholder={`find ingredient`} onChange={handleChange} value={input}/>
                     {
-                        ingredients ? ingredients.map(element => (
+                        selectedIngredients ? selectedIngredients.map(element => (
                             <p key={element.index} onClick={() => {
                                     removeIngredient(element)
                                     setIngredientsList(ingredientsList => [{strIngredient1: element}, ...ingredientsList])
@@ -93,8 +94,10 @@ const SearchByIngredients = () => {
                         ingredientsList ? ingredientsList.map(element => (
                             <Styled.Ingredient key={element.index} onClick={() => {
                                 setIngredientName(element.strIngredient1); 
-                                setIngredients(ingredients => [element.strIngredient1, ...ingredients]);
-                                removeElement(element.strIngredient1)
+                                setSelectedIngredients(ingredients => [element.strIngredient1, ...ingredients]);
+                                setIngredientsList(ingredientsList.filter(elementFromList => {
+                                    return elementFromList.strIngredient1 !== element.strIngredient1
+                                }))
                             }}>
                                 <p>{element.strIngredient1} 
                                 <span className="material-symbols-sharp">add_circle</span></p>
@@ -104,7 +107,7 @@ const SearchByIngredients = () => {
                 </Styled.Ingredients>
             </div>
             {
-            ingredients ? 
+            selectedIngredients ? 
             <Styled.Drinks>
                 {drinks ? drinks.map(drink => (
                     <DrinkListElement drink={drink} key={drink.idDrink} isFavorite={null}/>

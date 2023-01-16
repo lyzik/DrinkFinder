@@ -1,11 +1,12 @@
 import styled from "styled-components"
 
 export const Header = styled.div`
-    background-color: #F353DA;
+    background-color: rgba(0, 0, 0, 0.5);
     padding: 10px 50px 10px 50px;
     display: grid;
     grid-template-columns: auto 1fr;
     position: fixed;
+    z-index: 1;
     width: 100%;
 `;
 
