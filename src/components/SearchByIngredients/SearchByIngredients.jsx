@@ -10,6 +10,8 @@ const SearchByIngredients = () => {
     const [selectedIngredients, setSelectedIngredients] = useState([]) // Array of ingredients
     const [drinks, setDrinks] = useState(0); // List of drinks based on ingredients
     const [input, setInput] = useState("");
+    const [additionalIngredientLoading, setAdditionalIngredientLoading] = useState(false)
+    const [drinksVisible, setDrinksVisible] = useState(false) //only mobile!
 
     //Getting session ingredients and drinks if exists
     useEffect(() => {
@@ -31,18 +33,36 @@ const SearchByIngredients = () => {
         .then(() => {
             setIngredientName("")
         })
+        .catch(err => console.log(err))
     }, [ingredientName])
 
     //List of ingredients
     useEffect(() => {
         fetch("https://www.thecocktaildb.com/api/json/v2/1/list.php?i=list")
         .then(res => res.json())
-        // .then(data => setIngredientsList([...new Set(ingredients.concat(data.drinks).map(el => el))]))
         .then(data => {
             sessionStorage.getItem(`allIngredients`) ? 
-            setIngredientsList(JSON.parse(sessionStorage.getItem(`allIngredients`))) : setIngredientsList(data.drinks)
+            setIngredientsList(JSON.parse(sessionStorage.getItem(`allIngredients`))) 
+            : setIngredientsList(data.drinks)
         })
-        }, [])
+    }, [])
+
+    // Fetch ingredient that can be missing in list
+    useEffect(() => {
+        if(ingredientsList.filter(name => name.strIngredient1.toLowerCase().match(input.toLowerCase())).length === 0 
+        && input 
+        && !additionalIngredientLoading){
+            setAdditionalIngredientLoading(true)
+            fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?i=${input}`)
+            .then(res => res.json())
+            .then(data => {
+                data.ingredients[0].strIngredient ?
+                setIngredientsList(ingredientsList => [{strIngredient1: data.ingredients[0].strIngredient}, ...ingredientsList])
+                : null
+            })
+            .then(() => setAdditionalIngredientLoading(false))
+        }
+    }, [input])
 
     const handleChange = React.useCallback((event) => {
         setInput(event.target.value)
@@ -63,22 +83,25 @@ const SearchByIngredients = () => {
         return arr1.filter(item1 => arr2.some(item2 => item1[key] === item2[key]));
     }
 
-    window.addEventListener('beforeunload', (event) => {
-        sessionStorage.setItem('ingredients', JSON.stringify(selectedIngredients));
-        sessionStorage.setItem('drinks', JSON.stringify(drinks));
-        sessionStorage.setItem('allIngredients', JSON.stringify(ingredientsList));
-    }); //Find new solution
-
+    const useBeforeUnload = (selectedIngredients, drinks, ingredientsList) => {
+        useEffect(() => {
+          window.addEventListener('beforeunload', () => {
+            sessionStorage.setItem('ingredients', JSON.stringify(selectedIngredients));
+            sessionStorage.setItem('drinks', JSON.stringify(drinks));
+            sessionStorage.setItem('allIngredients', JSON.stringify(ingredientsList));
+          });
+          return () => {
+            window.removeEventListener('beforeunload', () => {});
+          };
+        }, [selectedIngredients, drinks, ingredientsList]);
+    }
+    useBeforeUnload(selectedIngredients, drinks, ingredientsList);
     return (
         <Styled.Main>
             <div>
-                <Styled.Ingredients>
-                    <button onClick={
-                        () => {                }
-                    }>
-                        napraw
-                    </button>
-                    <input type="text" placeholder={`find ingredient`} onChange={handleChange} value={input}/>
+                <Styled.Ingredients fullWidth={selectedIngredients.length ? 1 : 0} drinksVisible={drinksVisible}>
+                    <input type="text" placeholder={`find ingredient`} value={input} onChange={handleChange}/>
+                    <div className="ing-container">
                     {
                         selectedIngredients ? selectedIngredients.map(element => (
                             <p key={element.index} onClick={() => {
@@ -91,7 +114,9 @@ const SearchByIngredients = () => {
                         )) : null
                     }
                     {
-                        ingredientsList ? ingredientsList.map(element => (
+                        ingredientsList ? ingredientsList
+                            .filter(name => name.strIngredient1.toLowerCase().match(input.toLowerCase()))
+                            .map(element => (
                             <Styled.Ingredient key={element.index} onClick={() => {
                                 setIngredientName(element.strIngredient1); 
                                 setSelectedIngredients(ingredients => [element.strIngredient1, ...ingredients]);
@@ -104,16 +129,28 @@ const SearchByIngredients = () => {
                             </Styled.Ingredient>
                         )) : null
                     }
+                    </div>
                 </Styled.Ingredients>
             </div>
             {
+                (drinksVisible) && !drinks.length ? <h1 className="notFound">No drinks found</h1> : null
+            }
+            {
             selectedIngredients ? 
-            <Styled.Drinks>
+            <Styled.Drinks visible={selectedIngredients.length ? 1 : 0}  drinksVisible={drinksVisible}>
                 {drinks ? drinks.map(drink => (
                     <DrinkListElement drink={drink} key={drink.idDrink} isFavorite={null}/>
                 )) : null}
             </Styled.Drinks> : null
             }
+            <p className="visibleSetter" onClick={() => setDrinksVisible(!drinksVisible)}>
+                <span class="material-symbols-sharp">
+                    {drinksVisible ? 'arrow_back' : 'arrow_forward'}
+                </span>
+            </p>
+            <p className="drinksAmount">
+                { drinks ? drinks.length : 0}
+            </p>
         </Styled.Main>
     )
 }

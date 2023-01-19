@@ -13,4 +13,10 @@ export const SearchBarContainer = styled.div`
     input:focus{
         outline: none;
     }
+    @media(max-width: 768px){
+        padding: 90px 10px 10px 10px;
+        input{
+            width: 100%;
+        }
+    }
 `

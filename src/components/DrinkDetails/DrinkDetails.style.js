@@ -3,6 +3,9 @@ import styled from "styled-components";
 export const Info = styled.div`
     display: flex;
     padding: 55px;
+    @media(max-width: 768px){
+        padding: 50px 0 40px 20px;
+    }
 `
 
 export const ImgContainer = styled.div`
@@ -11,13 +14,23 @@ export const ImgContainer = styled.div`
         border-radius: 10px;
         opacity: 0.65;
     }
+    @media(max-width: 768px){
+        width: 150px;
+    }
 `
 export const Ingredients = styled.div`
-    padding-left: 40px
+    padding-left: 40px;
+    @media(max-width: 768px){
+        padding-left: 10px;
+    }   
 `
 
 export const Recipe = styled.div`
-    margin-left: 55px
+    margin-left: 55px;
+    @media(max-width: 768px){
+        margin-left: 20px;
+    }   
+    
 `
 
 export const Main = styled.div`
@@ -33,21 +46,30 @@ export const Main = styled.div`
     h1{
         color: white;
     }
-   
+    @media(max-width: 768px){
+        grid-template-columns: 1fr;
+        font-size: 15px
+    }   
 `
 
 export const RightSide = styled.div`
     display: flex;
     justify-content: center;
     align-items: start;
+    @media(max-width: 768px){
+        justify-content: left;
+    }   
 `
 
 export const moreInfo = styled.div`
     margin-top: 55px;
     background-color: rgba(0, 0, 0, 0.7);
     width: 50%;
-    justify-self: center;
     border-radius: 15px;
     padding: 15px;
+    @media(max-width: 768px){
+        margin: 20px;
+        width: 100%;
+    }   
 `
 

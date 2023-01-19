@@ -1,14 +1,16 @@
+html{
+  background: linear-gradient(rgba(59, 58, 58, 0.75), rgba(0,0,0,0.75)), url("../public/edgar-chaparro-Lwx-q6OdGAc-unsplash.jpg");
+  background-size: cover;
+  background-attachment: fixed;
+
+}
+
 body{
-    background: linear-gradient(rgba(59, 58, 58, 0.75), rgba(0,0,0,0.75)), url("../public/edgar-chaparro-Lwx-q6OdGAc-unsplash.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
 }
 
   /* Firefox */
   * {
     scrollbar-width: 7px;
-    scrollbar-color: #ffffff #ffffff;
   }
 
   /* Chrome, Edge, and Safari */
@@ -17,11 +19,30 @@ body{
   }
 
   *::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0);
+    background-color: black;
+    border-radius: 15px;
   }
 
   *::-webkit-scrollbar-thumb {
     background-color: #ffffff;
     border-radius: 15px;
     border: 3px solid #ffffff;
+  }
+
+  .page-enter {
+    opacity: 0;
+  }
+  
+  .page-enter-active {
+    opacity: 1;
+    transition: opacity 300ms;
+  }
+  
+  .page-exit {
+    opacity: 1;
+  }
+  
+  .page-exit-active {
+    opacity: 0;
+    transition: opacity 300ms;
   }

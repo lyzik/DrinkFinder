@@ -12,6 +12,10 @@ background-color: rgba(0, 0, 0, 0.4);
     padding: 20px 0px 20px 20px;
     font-size: 40px;
     transition: 0.3s;
+    @media(max-width: 768px){
+        font-size: 30px;
+        padding-left: 50px;
+    }
 }
 .material-symbols-sharp:hover {
     color: #F67280;
@@ -20,6 +24,12 @@ background-color: rgba(0, 0, 0, 0.4);
 
 &:hover{
     background-color: rgba(46, 45, 45, 0.7);
+}
+
+@media(max-width: 768px){
+    margin: 10px 10px 10px 10px;
+    grid-template-columns: 100px auto 100px;
+    align-items: center;
 }
 `;
 
@@ -32,6 +42,14 @@ img {
     border-radius: 5px;
     min-width: 200px;
     opacity: 0.7;
+}
+
+@media(max-width: 768px){
+    img {
+        border-radius: 5px;
+        min-width: 100px;
+        opacity: 0.7;
+    }
 }
 `
 

@@ -28,9 +28,12 @@ const dataSlice = createSlice({
                 state.status = "loading"
             })
             .addCase(fetchData.fulfilled, (state, action) => {
-                state.status = "success"
-                state.drinks = [...state.drinks, ...action.payload.drinks]
-                state.fetchedDrinks = action.payload.drinks
+                console.log(action.payload.drinks)
+                if(action.payload.drinks){
+                    state.status = "success"
+                    state.drinks = [...state.drinks, ...action.payload.drinks]
+                    state.fetchedDrinks = action.payload.drinks
+                }else state.status = "failed"
             })
             .addCase(fetchData.rejected, (state) => {
                 state.status = "rejected"
