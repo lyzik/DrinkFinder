@@ -8,8 +8,7 @@ import * as Styled from "./DrinksList.style"
 const DrinksList = () => {
     const dispatch = useDispatch();
     const {drinks} = useSelector(state => state.data)
-    const status = useSelector(state => state.data.status)
-    const [letterCharCode, setLetterCharCode] = useState(49)
+    const [letterCharCode, setLetterCharCode] = useState(97)
 
     const handleScroll = event => {
         if(window.innerHeight + window.scrollY >= document.body.offsetHeight){
@@ -22,12 +21,6 @@ const DrinksList = () => {
         dispatch(fetchData(String.fromCharCode(letterCharCode)))
     }, [letterCharCode])
 
-    useEffect(() => {
-        console.log(status)
-        if(status === "failed"){
-            console.log(status)
-        }
-    }, [letterCharCode])
     function handleClick(){
         setLetterCharCode(letterCharCode + 1)
     }

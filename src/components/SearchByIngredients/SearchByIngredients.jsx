@@ -1,6 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
+import { useBeforeUnload } from "../../hooks/useBeforeUnload";
 import DrinkListElement from "../DrinkListElement/DrinkListElement";
 import * as Styled from './SearchByIngredients.style'
 
@@ -83,18 +84,6 @@ const SearchByIngredients = () => {
         return arr1.filter(item1 => arr2.some(item2 => item1[key] === item2[key]));
     }
 
-    const useBeforeUnload = (selectedIngredients, drinks, ingredientsList) => {
-        useEffect(() => {
-          window.addEventListener('beforeunload', () => {
-            sessionStorage.setItem('ingredients', JSON.stringify(selectedIngredients));
-            sessionStorage.setItem('drinks', JSON.stringify(drinks));
-            sessionStorage.setItem('allIngredients', JSON.stringify(ingredientsList));
-          });
-          return () => {
-            window.removeEventListener('beforeunload', () => {});
-          };
-        }, [selectedIngredients, drinks, ingredientsList]);
-    }
     useBeforeUnload(selectedIngredients, drinks, ingredientsList);
     return (
         <Styled.Main>

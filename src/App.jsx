@@ -12,10 +12,10 @@ function App() {
       <Header />
       <BrowserRouter>
         <Routes>
-          <Route path='' element={<DrinksList />} />
+          <Route path='/list' element={<DrinksList />} />
           <Route path='/drinks/:id' element={<DrinkDetails />}/>
           <Route path='/search' element={<SearchDrinksComponent />}/>
-          <Route path='/searchbying' element={<SearchByIngredients />} />
+          <Route path='/' element={<SearchByIngredients />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -6,19 +6,10 @@ import * as Styled from "./DrinkListElement.style"
 import { useSelector } from "react-redux";
 
 const DrinkListElement = ( {drink} ) => {
-    // const [favourite, setFavorite] = useState([localStorage.getItem(drink.drinkId)])
 
     const favorites = useSelector(state => state.favorites.favoritesId)
     const isFavorite = favorites[drink.idDrink] || false
     const dispatch = useDispatch()
-
-    // const setFavoriteDrink = drinkId => {
-    //     if(!localStorage.getItem(drinkId)){
-    //         localStorage.setItem(drinkId, true);
-    //     }else{
-    //         localStorage.removeItem(drinkId)
-    //     }
-    // }
 
     const setFavoriteDrink = drinkId => {
         dispatch(toggleFavoriteDrink(drinkId))
