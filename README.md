@@ -11,10 +11,12 @@ You can also find your favorite drink using simple search engine, or just browse
 
 ## Technologies 
 - React
-- Redux
+- Redux / Toolkit
 - React Router
 - Styled Components
 - Cocktaildb.com api
+- Vite
+- React Color Extractor
 
 
 ## Link
