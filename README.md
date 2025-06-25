@@ -20,6 +20,6 @@ You can also find your favorite drink using simple search engine, or just browse
 
 
 ## Link
-<a href="https://drink-finder-delta.vercel.app">https://sianko-drinkfinder.netlify.app</a>
+<a href="https://drink-finder-delta.vercel.app">https://drink-finder-delta.vercel.app</a>
 
 
