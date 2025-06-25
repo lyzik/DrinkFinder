@@ -10,7 +10,7 @@ const Header = () => {
         <Styled.MainLink href={`/`}>
             <img src={logoUrl} alt="" />
         </Styled.MainLink>
-        <span class="material-symbols-sharp" onClick={() => setMenuVisibility(!menuVisibility)}>
+        <span className="material-symbols-sharp" onClick={() => setMenuVisibility(!menuVisibility)}>
             menu
         </span>
         <Styled.Nav menuVisibility={menuVisibility}>

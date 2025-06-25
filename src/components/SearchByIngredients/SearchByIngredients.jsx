@@ -1,147 +1,166 @@
-import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useBeforeUnload } from "../../hooks/useBeforeUnload";
 import DrinkListElement from "../DrinkListElement/DrinkListElement";
-import * as Styled from './SearchByIngredients.style'
+import * as Styled from "./SearchByIngredients.style";
 
 const SearchByIngredients = () => {
-    const [ingredientName, setIngredientName] = useState() // This state is using in fetching data (string)
-    const [ingredientsList, setIngredientsList] = useState([]) //List of ingredients 
-    const [selectedIngredients, setSelectedIngredients] = useState([]) // Array of ingredients
-    const [drinks, setDrinks] = useState(0); // List of drinks based on ingredients
-    const [input, setInput] = useState("");
-    const [additionalIngredientLoading, setAdditionalIngredientLoading] = useState(false)
-    const [drinksVisible, setDrinksVisible] = useState(false) //only mobile!
+  const [ingredientName, setIngredientName] = useState("");
+  const [ingredientsList, setIngredientsList] = useState([]);
+  const [selectedIngredients, setSelectedIngredients] = useState([]);
+  const [drinks, setDrinks] = useState([]);
+  const [input, setInput] = useState("");
+  const [additionalIngredientLoading, setAdditionalIngredientLoading] = useState(false);
+  const [drinksVisible, setDrinksVisible] = useState(false);
 
-    //Getting session ingredients and drinks if exists
-    useEffect(() => {
-        sessionStorage.getItem(`ingredients`) ? 
-        setSelectedIngredients(JSON.parse(sessionStorage.getItem(`ingredients`))) : null
+  useEffect(() => {
+    const storedIngredients = sessionStorage.getItem("ingredients");
+    const storedDrinks = sessionStorage.getItem("drinks");
+    if (storedIngredients) setSelectedIngredients(JSON.parse(storedIngredients));
+    if (storedDrinks) setDrinks(JSON.parse(storedDrinks));
+  }, []);
 
-        sessionStorage.getItem(`drinks`) ? 
-        setDrinks(JSON.parse(sessionStorage.getItem(`drinks`))) : null
-    }, [])
+  useEffect(() => {
+    fetch("https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list")
+      .then((res) => res.json())
+      .then((data) => {
+        const list = data.drinks || [];
+        setIngredientsList(list);
+        sessionStorage.setItem("allIngredients", JSON.stringify(list));
+      })
+      .catch((err) => console.error("Failed to fetch ingredients list:", err));
+  }, []);
 
-    // Fetching all drinks with ingredients
-    useEffect(() => {
-        fetch(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${ingredientName}`)
-        .then(res => res.json())
-        .then(data => {
-            !drinks ? setDrinks(data.drinks)
-            : (setDrinks(mergingArrays(data.drinks, drinks, "idDrink"))) 
-        })
-        .then(() => {
-            setIngredientName("")
-        })
-        .catch(err => console.log(err))
-    }, [ingredientName])
+  useEffect(() => {
+    if (!ingredientName) return;
 
-    //List of ingredients
-    useEffect(() => {
-        fetch("https://www.thecocktaildb.com/api/json/v2/1/list.php?i=list")
-        .then(res => res.json())
-        .then(data => {
-            sessionStorage.getItem(`allIngredients`) ? 
-            setIngredientsList(JSON.parse(sessionStorage.getItem(`allIngredients`))) 
-            : setIngredientsList(data.drinks)
-        })
-    }, [])
-
-    // Fetch ingredient that can be missing in list
-    useEffect(() => {
-        if(ingredientsList.filter(name => name.strIngredient1.toLowerCase().match(input.toLowerCase())).length === 0 
-        && input 
-        && !additionalIngredientLoading){
-            setAdditionalIngredientLoading(true)
-            fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?i=${input}`)
-            .then(res => res.json())
-            .then(data => {
-                data.ingredients[0].strIngredient ?
-                setIngredientsList(ingredientsList => [{strIngredient1: data.ingredients[0].strIngredient}, ...ingredientsList])
-                : null
-            })
-            .then(() => setAdditionalIngredientLoading(false))
-        }
-    }, [input])
-
-    const handleChange = React.useCallback((event) => {
-        setInput(event.target.value)
-    }, [])
-
-    const removeIngredient = ingToRemove => {
-        setDrinks(0)
-        setSelectedIngredients(selectedIngredients.filter(element => {
-            if(element !== ingToRemove){
-                setIngredientName(element)
-                return element
-            }
-        })
-        );
-    }
-    
-    const mergingArrays = (arr1, arr2, key) => {
-        return arr1.filter(item1 => arr2.some(item2 => item1[key] === item2[key]));
-    }
-
-    useBeforeUnload(selectedIngredients, drinks, ingredientsList);
-    return (
-        <Styled.Main>
-            <div>
-                <Styled.Ingredients fullWidth={selectedIngredients.length ? 1 : 0} drinksVisible={drinksVisible}>
-                    <input type="text" placeholder={`find ingredient`} value={input} onChange={handleChange}/>
-                    <div className="ing-container">
-                    {
-                        selectedIngredients ? selectedIngredients.map(element => (
-                            <p key={element.index} onClick={() => {
-                                    removeIngredient(element)
-                                    setIngredientsList(ingredientsList => [{strIngredient1: element}, ...ingredientsList])
-                                }
-                            }>
-                                {element}
-                            <span className="material-symbols-sharp">remove_circle</span></p>
-                        )) : null
-                    }
-                    {
-                        ingredientsList ? ingredientsList
-                            .filter(name => name.strIngredient1.toLowerCase().match(input.toLowerCase()))
-                            .map(element => (
-                            <Styled.Ingredient key={element.index} onClick={() => {
-                                setIngredientName(element.strIngredient1); 
-                                setSelectedIngredients(ingredients => [element.strIngredient1, ...ingredients]);
-                                setIngredientsList(ingredientsList.filter(elementFromList => {
-                                    return elementFromList.strIngredient1 !== element.strIngredient1
-                                }))
-                            }}>
-                                <p>{element.strIngredient1} 
-                                <span className="material-symbols-sharp">add_circle</span></p>
-                            </Styled.Ingredient>
-                        )) : null
-                    }
-                    </div>
-                </Styled.Ingredients>
-            </div>
-            {
-                (drinksVisible) && !drinks.length ? <h1 className="notFound">No drinks found</h1> : null
-            }
-            {
-            selectedIngredients ? 
-            <Styled.Drinks visible={selectedIngredients.length ? 1 : 0}  drinksVisible={drinksVisible}>
-                {drinks ? drinks.map(drink => (
-                    <DrinkListElement drink={drink} key={drink.idDrink} isFavorite={null}/>
-                )) : null}
-            </Styled.Drinks> : null
-            }
-            <p className="visibleSetter" onClick={() => setDrinksVisible(!drinksVisible)}>
-                <span class="material-symbols-sharp">
-                    {drinksVisible ? 'arrow_back' : 'arrow_forward'}
-                </span>
-            </p>
-            <p className="drinksAmount">
-                { drinks ? drinks.length : 0}
-            </p>
-        </Styled.Main>
+    fetch(
+      `https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(
+        ingredientName
+      )}`
     )
-}
+      .then((res) => res.json())
+      .then((data) => {
+        const newDrinks = data.drinks || [];
+        if (drinks.length === 0) {
+          setDrinks(newDrinks);
+        } else {
+          setDrinks(mergingArrays(newDrinks, drinks, "idDrink"));
+        }
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setIngredientName(""));
+  }, [ingredientName]);
 
-export default SearchByIngredients
+  useEffect(() => {
+    if (
+      input &&
+      !additionalIngredientLoading &&
+      !ingredientsList.some((i) =>
+        i.strIngredient1.toLowerCase().includes(input.toLowerCase())
+      )
+    ) {
+      setAdditionalIngredientLoading(true);
+      fetch(
+        `https://www.thecocktaildb.com/api/json/v1/1/search.php?i=${encodeURIComponent(
+          input
+        )}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          const newIng = data?.ingredients?.[0]?.strIngredient;
+          if (newIng) {
+            setIngredientsList((prev) => [{ strIngredient1: newIng }, ...prev]);
+            sessionStorage.setItem(
+              "allIngredients",
+              JSON.stringify([{ strIngredient1: newIng }, ...ingredientsList])
+            );
+          }
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setAdditionalIngredientLoading(false));
+    }
+  }, [input, ingredientsList, additionalIngredientLoading]);
+
+  const handleChange = useCallback((e) => setInput(e.target.value), []);
+
+  const removeIngredient = (ingToRemove) => {
+    const updated = selectedIngredients.filter((el) => el !== ingToRemove);
+    setSelectedIngredients(updated);
+    setDrinks([]);
+    setIngredientName(updated[0] || "");
+    setIngredientsList((prev) => [{ strIngredient1: ingToRemove }, ...prev]);
+    sessionStorage.setItem("ingredients", JSON.stringify(updated));
+    sessionStorage.setItem("drinks", JSON.stringify([]));
+  };
+
+  const mergingArrays = (arr1, arr2, key) =>
+    arr1.filter((item1) => arr2.some((item2) => item1[key] === item2[key]));
+
+  useBeforeUnload(selectedIngredients, drinks, ingredientsList);
+
+  return (
+    <Styled.Main>
+      <div>
+        <Styled.Ingredients fullWidth={+!!selectedIngredients.length} drinksVisible={drinksVisible}>
+          <input
+            type="text"
+            placeholder="find ingredient"
+            value={input}
+            onChange={handleChange}
+          />
+          <div className="ing-container">
+            {selectedIngredients.map((el, i) => (
+              <p key={`${el}-${i}`} onClick={() => removeIngredient(el)}>
+                {el}
+                <span className="material-symbols-sharp">remove_circle</span>
+              </p>
+            ))}
+            {ingredientsList
+              .filter((ing) =>
+                ing.strIngredient1.toLowerCase().includes(input.toLowerCase())
+              )
+              .map((ing, i) => (
+                <Styled.Ingredient
+                  key={`${ing.strIngredient1}-${i}`}                  onClick={() => {
+                    setIngredientName(ing.strIngredient1);
+                    setSelectedIngredients((prev) => [ing.strIngredient1, ...prev]);
+                    setIngredientsList((prev) =>
+                      prev.filter((e) => e.strIngredient1 !== ing.strIngredient1)
+                    );
+                    sessionStorage.setItem(
+                      "ingredients",
+                      JSON.stringify([ing.strIngredient1, ...selectedIngredients])
+                    );
+                  }}
+                >
+                  <p>
+                    {ing.strIngredient1}
+                    <span className="material-symbols-sharp">add_circle</span>
+                  </p>
+                </Styled.Ingredient>
+              ))}
+          </div>
+        </Styled.Ingredients>
+      </div>
+
+      {drinksVisible && drinks.length === 0 && <h1 className="notFound">No drinks found</h1>}
+
+      {selectedIngredients.length > 0 && (
+        <Styled.Drinks visible={1} drinksVisible={drinksVisible}>
+          {drinks.map((drink) => (
+            <DrinkListElement key={drink.idDrink} drink={drink} isFavorite={null} />
+          ))}
+        </Styled.Drinks>
+      )}
+
+      <p className="visibleSetter" onClick={() => setDrinksVisible((vis) => !vis)}>
+        <span className="material-symbols-sharp">
+          {drinksVisible ? "arrow_back" : "arrow_forward"}
+        </span>
+      </p>
+      <p className="drinksAmount">{drinks.length}</p>
+    </Styled.Main>
+  );
+};
+
+export default SearchByIngredients;
